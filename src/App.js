@@ -1,25 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import app from "./config/credenciales";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-function App() {
+import Home from "./views/Home";
+import Login from "./views/Login";
+
+const auth = getAuth(app);
+
+export default function App() {
+  const [usuarioGlobal, setUsuarioGlobal] = useState(null);
+  //Escucha los cambios, si inicio sesion o cerro sesion
+  onAuthStateChanged(auth, (usuario) => {
+    //Detectar cambios de sesion
+    if (usuario) {
+      //Inicio sesion
+      setUsuarioGlobal(usuario);
+    } else {
+      //No hay sesion
+      setUsuarioGlobal(null);
+    }
+  });
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>{usuarioGlobal ? <Home correo={usuarioGlobal.email} /> : <Login />}</>
   );
 }
-
-export default App;
